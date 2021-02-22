@@ -1,6 +1,7 @@
 const http = require('http');
 const {HTTP_SERVER_PORT} = require('../utils/config')
 const {getCurrentTimeInfo} = require('../time_script/update')
+const {logger} = require('../utils/log')
 
 const HTTP_GET_TIMESTAMP_URL = '/get_timestamp'
 
@@ -18,7 +19,7 @@ const startHttpSvr = () => {
         response.end()
     })
     server.listen(HTTP_SERVER_PORT, function () {
-        console.info(`HttpServer start at http://127.0.0.1:${HTTP_SERVER_PORT}`)
+        logger.info(`HttpServer start at http://127.0.0.1:${HTTP_SERVER_PORT}`)
     })
 }
 

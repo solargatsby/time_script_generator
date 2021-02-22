@@ -7,6 +7,7 @@ const {
     generateTimeIndexStateOutput
 } = require('./time_index_state_script')
 const {TIME_INFO_CELL_CAPACITY, TimeInfo, generateTimeInfoOutputs} = require('./time_info_script')
+const {logger} = require('../utils/log')
 
 const ckb = new CKB(CKB_NODE_RPC)
 const FEE = BigInt(1000)
@@ -30,10 +31,8 @@ const createTimeCell = async () => {
     }
 
     const timeIndex = 0
-    const timeNow = new Date()
-    const timestamp = Math.floor(timeNow.getTime() / 1000)
+    const timestamp = Math.floor(new Date().getTime() / 1000)
 
-    // const outputs = await generateTimeIndexStateOutputs( capacity, TIME_INDEX_STATE_CELL_CAPACITY, timeScriptArgs)
     const cellDeps = [await secp256k1Dep(), TimeIndexStateDep, TimeInfoDep]
     const rawTx = {
         version: '0x0',
@@ -46,8 +45,8 @@ const createTimeCell = async () => {
     rawTx.witnesses = rawTx.inputs.map((_, i) => (i > 0 ? '0x' : {lock: '', inputType: '', outputType: ''}))
     const signedTx = ckb.signTransaction(ownerPrivateKey)(rawTx)
     const txHash = await ckb.rpc.sendTransaction(signedTx)
-    console.info(`Creating time cell tx has been sent with tx hash:${txHash} timeIndex:${timeIndex} timestamp: ${timestamp} (${timeNow})`)
-    console.info(`Time cell args:${timeScriptArgs}`)
+    logger.info(`Creating time cell txHash:${txHash} timeIndex:${timeIndex} timestamp: ${timestamp}`)
+    logger.info(`Time cell args:${timeScriptArgs}`)
     return {txHash, timeScriptArgs}
 }
 

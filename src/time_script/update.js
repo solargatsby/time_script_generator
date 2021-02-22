@@ -20,6 +20,7 @@ const {
     generateTimeInfoOutputs
 } = require('./time_info_script')
 const {int2Hex} = require('../utils/hex')
+const {logger} = require('../utils/log')
 
 const ckb = new CKB(CKB_NODE_RPC)
 const FEE = BigInt(1000)
@@ -116,8 +117,7 @@ const updateTimeCell = async () => {
             lock: ownerLockScript,
         })
     }
-    const timeNow = new Date()
-    const timestamp = Math.floor(timeNow.getTime() / 1000)
+    const timestamp = Math.floor(new Date().getTime() / 1000)
     const nextTimeInfo = new TimeInfo(timestamp, nextTimeIndexState.getTimeIndex())
     const cellDeps = [await secp256k1Dep(), TimeIndexStateDep, TimeInfoDep]
     const rawTx = {
@@ -131,7 +131,7 @@ const updateTimeCell = async () => {
     rawTx.witnesses = rawTx.inputs.map((_, i) => (i > 0 ? '0x' : {lock: '', inputType: '', outputType: ''}))
     const signedTx = ckb.signTransaction(ownerPrivateKey)(rawTx)
     const txHash = await ckb.rpc.sendTransaction(signedTx)
-    console.info(`Updating time cell tx has been sent with tx hash:${txHash} timeIndex:${nextTimeInfo.getTimeIndex()} timestamp: ${timestamp} (${timeNow})`)
+    logger.info(`Updating time cell txHash:${txHash} timeIndex:${nextTimeInfo.getTimeIndex()} timestamp: ${timestamp}`)
     return txHash
 }
 

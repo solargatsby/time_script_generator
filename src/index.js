@@ -3,9 +3,10 @@ const {updateTimeCell, getCurrentTimeIndexStateCell, getTimeInfoCell} = require(
 const {TIME_INFO_UPDATE_INTERVAL} = require('./time_script/time_info_script')
 const {startHttpSvr} = require('./http_svr/http_svr')
 const {TimeIndexStateTypeScript, TimeInfoTypeScript, saveConfig} = require('./utils/config')
+const {logger} = require('./utils/log')
 
 const startTimeSvr = async () => {
-    console.info("CKB Time server start")
+    logger.info("Time script generator server start")
     const {curTimeIndexStateCell, curTimeIndexState} = await getCurrentTimeIndexStateCell()
     if (!curTimeIndexStateCell) {
         //create time cell
@@ -19,7 +20,7 @@ const startTimeSvr = async () => {
 
     //update time cell
     const {timeInfo: curTimeInfo} = await getTimeInfoCell(curTimeIndexState.getTimeIndex())
-    console.info(`CurrentTimeIndex:${curTimeInfo.getTimeIndex()} CurrentTimestamp:${curTimeInfo.getTimestamp()}`)
+    logger.info(`CurrentTimeIndex:${curTimeInfo.getTimeIndex()} CurrentTimestamp:${curTimeInfo.getTimestamp()}`)
 
     const curTimestamp = Math.floor(new Date().getTime() / 1000)
     let nextUpdateTime = curTimeInfo.getTimestamp() + TIME_INFO_UPDATE_INTERVAL - curTimestamp
@@ -27,7 +28,7 @@ const startTimeSvr = async () => {
         nextUpdateTime = 0
     }
 
-    console.info(`Next time info cell update in ${nextUpdateTime} seconds`)
+    logger.info(`Next time info cell update in ${nextUpdateTime} seconds`)
     setTimeout(startUpdateTimeInfoCell, nextUpdateTime * 1000)
 }
 
@@ -35,7 +36,7 @@ const startUpdateTimeInfoCell = async () => {
     try {
         await updateTimeCell()
     } catch (e) {
-        console.error(e)
+        logger.error(e)
         setTimeout(startUpdateTimeInfoCell, 10 * 1000) //retry after 10 seconds
         return
     }
