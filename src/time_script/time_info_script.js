@@ -1,5 +1,5 @@
 const { ownerLockInfo } = require('./helper')
-const { TimeInfoTypeScript } = require('../utils/const')
+const { TimeInfoTypeScript } = require('../utils/config')
 const { TIME_INDEX_CELL_DATA_N } = require('./time_index_state_script')
 const { int2Hex, remove0x } = require('../utils/hex')
 
@@ -26,7 +26,7 @@ class TimeInfo {
     }
 
     toString(){
-        return `0x${int2Hex(this.index, 2)}${int2Hex(this.timestamp, 4)}`
+        return `0x${int2Hex(this.index, 2)}${int2Hex(this.timestamp, 8)}`
     }
 }
 

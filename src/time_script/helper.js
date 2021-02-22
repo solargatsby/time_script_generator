@@ -2,7 +2,6 @@ const fetch = require('node-fetch')
 const CKB = require('@nervosnetwork/ckb-sdk-core').default
 const { scriptToHash } = require('@nervosnetwork/ckb-sdk-utils')
 const { CKB_NODE_RPC, CKB_NODE_INDEXER, OWNER_PRIVATE_KEY } = require('../utils/config')
-const { TimeIndexStateTypeScript } = require('../utils/const')
 
 const ckb = new CKB(CKB_NODE_RPC)
 
