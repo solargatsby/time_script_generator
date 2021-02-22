@@ -13,7 +13,7 @@ const FEE = BigInt(1000)
 
 const createTimeCell = async () => {
     const {ownerLockScript, ownerPrivateKey} = await ownerLockInfo()
-    const liveCells = await getCells(ownerLockScript, 'lock')
+    const liveCells = await getCells(ownerLockScript, 'lock', {output_data_len_range:['0x0','0x1']})
     const needCapacity = TIME_INDEX_STATE_CELL_CAPACITY + TIME_INFO_CELL_CAPACITY + FEE
     const {inputs, capacity} = collectInputs(liveCells, needCapacity, '0x0')
 

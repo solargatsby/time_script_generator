@@ -40,7 +40,7 @@ const ownerLockInfo = async () => {
 }
 
 //getCells from indexer, param script: lock or type, param type: 'lock' or 'type'
-const getCells = async (script, type) => {
+const getCells = async (script, type, filter) => {
     let payload = {
         id: 1,
         jsonrpc: '2.0',
@@ -53,6 +53,7 @@ const getCells = async (script, type) => {
                     args: script.args,
                 },
                 script_type: type,
+                filter: filter,
             },
             'asc',
             '0x64',

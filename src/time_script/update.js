@@ -85,7 +85,7 @@ const updateTimeCell = async () => {
     const timeInfoCapacity = preTimeInfoCell ? BigInt(parseInt(preTimeInfoCell.output.capacity.substr(2), 16)) : TIME_INFO_CELL_CAPACITY
 
     const {ownerLockScript, ownerPrivateKey} = await ownerLockInfo()
-    const liveCells = await getCells(ownerLockScript, 'lock')
+    const liveCells = await getCells(ownerLockScript, 'lock', {output_data_len_range:['0x0','0x1']})
     const needCapacity = (preTimeInfoCell ? BigInt(0) : TIME_INFO_CELL_CAPACITY) + FEE
     const {inputs, capacity} = collectInputs(liveCells, needCapacity, '0x0')
 
@@ -105,8 +105,10 @@ const updateTimeCell = async () => {
             since: generateTimeInfoSince(preTimeInfo.getTimestamp()),
         })
     }
-    let outputs = [await generateTimeIndexStateOutput(curTimeIndexStateCell.output.type.args, timeIndexStateCapacity),
-        await generateTimeInfoOutputs(curTimeIndexStateCell.output.type.args, timeInfoCapacity)]
+    let outputs = [
+        await generateTimeIndexStateOutput(curTimeIndexStateCell.output.type.args, timeIndexStateCapacity),
+        await generateTimeInfoOutputs(curTimeIndexStateCell.output.type.args, timeInfoCapacity)
+    ]
 
     if (capacity !== needCapacity) {
         outputs.push({
