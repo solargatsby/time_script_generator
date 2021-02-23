@@ -45,7 +45,7 @@ const createTimeCell = async () => {
     rawTx.witnesses = rawTx.inputs.map((_, i) => (i > 0 ? '0x' : {lock: '', inputType: '', outputType: ''}))
     const signedTx = ckb.signTransaction(ownerPrivateKey)(rawTx)
     const txHash = await ckb.rpc.sendTransaction(signedTx)
-    logger.info(`Creating time cell txHash:${txHash} timeIndex:${timeIndex} timestamp: ${timestamp}`)
+    logger.info(`Creating time cell txHash:${txHash} timeIndex:${timeIndex} timestamp:${timestamp}`)
     logger.info(`Time cell args:${timeScriptArgs}`)
     return {txHash, timeScriptArgs}
 }

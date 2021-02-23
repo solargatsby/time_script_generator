@@ -2,7 +2,7 @@ const {ownerLockInfo} = require('./helper')
 const {TimeIndexStateTypeScript} = require('../utils/config')
 const {remove0x} = require('../utils/hex')
 const TIME_INDEX_STATE_CELL_CAPACITY = BigInt(400) * BigInt(100000000)
-const TIME_INDEX_CELL_DATA_N = 12
+const TIME_INDEX_CELL_DATA_N = 3
 
 class TimeIndexState {
     constructor(index, n = TIME_INDEX_CELL_DATA_N) {

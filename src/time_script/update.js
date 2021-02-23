@@ -68,7 +68,7 @@ const getCurrentTimeInfo = async () => {
 }
 
 const generateTimeInfoSince = preUpdateTime => {
-    const since = preUpdateTime + (TIME_INDEX_CELL_DATA_N + 1) * TIME_INFO_UPDATE_INTERVAL
+    const since = preUpdateTime + TIME_INDEX_CELL_DATA_N * TIME_INFO_UPDATE_INTERVAL
     return `0x40${int2Hex(since, 14)}`
 }
 
@@ -130,9 +130,11 @@ const updateTimeCell = async () => {
     }
     rawTx.witnesses = rawTx.inputs.map((_, i) => (i > 0 ? '0x' : {lock: '', inputType: '', outputType: ''}))
     const signedTx = ckb.signTransaction(ownerPrivateKey)(rawTx)
+    logger.debug(JSON.stringify(signedTx, undefined, 2))
+
     const txHash = await ckb.rpc.sendTransaction(signedTx)
-    logger.info(`Updating time cell txHash:${txHash} timeIndex:${nextTimeInfo.getTimeIndex()} timestamp: ${timestamp}`)
-    return txHash
+    logger.info(`Updating time cell txHash:${txHash} timeIndex:${nextTimeInfo.getTimeIndex()} timestamp:${timestamp}`)
+    return {txHash, TimeIndexState: nextTimeIndexState, TimeInfo: nextTimeInfo}
 }
 
 module.exports = {

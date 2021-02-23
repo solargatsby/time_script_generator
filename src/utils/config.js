@@ -14,7 +14,7 @@ let TimeIndexStateTypeScript = {
 }
 
 const TimeIndexStateDep = {
-    outPoint: {txHash: '0x7589ad749e643eb7f6b8302ab398ab18161a04ce32fc904b42e4b2698180af21', index: '0x0'},
+    outPoint: {txHash: '0x54a849eaf111194163ee6a14040225af5a258f901f3f33b4e04efe784d3fb796', index: '0x0'},
     depType: 'depGroup',
 }
 
@@ -25,7 +25,7 @@ let TimeInfoTypeScript = {
 }
 
 const TimeInfoDep = {
-    outPoint: {txHash: '0x3dcf7be43610ba4329441a031989e8822aa5c51809da8a160827dd773b053ad8', index: '0x0'},
+    outPoint: {txHash: '0x3174d07904bc7bc4cb82bae1ddb22d7ce420a257af375c870d6a2de3381ff785', index: '0x0'},
     depType: 'depGroup',
 }
 
