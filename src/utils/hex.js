@@ -1,29 +1,30 @@
 const remove0x = (hex) => {
-    if (hex.startsWith('0x')) {
-        return hex.substring(2)
-    }
-    return hex
+  if (hex.startsWith('0x')) {
+    return hex.substring(2)
+  }
+  return hex
 }
 
-const int2Hex = (num, width) => {
-    const hex = "0123456789abcdef";
-    let s = "";
-    while (num) {
-        s = hex.charAt(num % 16) + s;
-        num = Math.floor(num / 16);
-    }
-    if (typeof width === "undefined" || width <= s.length) {
-        return s;
-    }
-    let delta = width - s.length;
-    let padding = "";
-    while (delta-- > 0) {
-        padding += "0";
-    }
-    return padding + s;
+const ArrayBufferToHex = (arrayBuffer) => {
+  return Array.prototype.map.call(new Uint8Array(arrayBuffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+}
+
+const uin32ToHex = (u32, bigEnd = true) => {
+  let buf = new ArrayBuffer(4)
+  let view = new DataView(buf)
+  view.setUint32(0, u32, !bigEnd)
+  return ArrayBufferToHex(buf)
+}
+
+const uint8ToHex = (u8) => {
+  let buf = new ArrayBuffer(1)
+  let view = new DataView(buf)
+  view.setUint8(0, u8)
+  return ArrayBufferToHex(buf)
 }
 
 module.exports = {
-    int2Hex,
-    remove0x,
+  uint8ToHex,
+  uin32ToHex,
+  remove0x,
 }
