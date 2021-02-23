@@ -8,13 +8,11 @@ const {
   TimeInfoTypeScript
 } = require('../utils/config')
 const {
-  TIME_INDEX_CELL_DATA_N,
   timeIndexStateFromData,
   generateTimeIndexStateOutput
 } = require('./time_index_state_script')
 const {
   TIME_INFO_CELL_CAPACITY,
-  TIME_INFO_UPDATE_INTERVAL,
   TimeInfo,
   timeInfoFromData,
   generateTimeInfoOutputs
@@ -67,9 +65,8 @@ const getCurrentTimeInfo = async () => {
   return curTimeInfo
 }
 
-const generateTimeInfoSince = preUpdateTime => {
-  const since = preUpdateTime + TIME_INDEX_CELL_DATA_N * TIME_INFO_UPDATE_INTERVAL
-  return `0x40000000${uin32ToHex(since)}`
+const generateTimeInfoSince = timestamp => {
+  return `0x40000000${uin32ToHex(timestamp)}`
 }
 
 const updateTimeCell = async () => {
@@ -78,10 +75,7 @@ const updateTimeCell = async () => {
     throw ('Cannot found current time index state cell')
   }
   const nextTimeIndexState = curTimeIndexState.incrIndex()
-  const {
-    timeInfoCell: preTimeInfoCell,
-    timeInfo: preTimeInfo
-  } = await getTimeInfoCell(nextTimeIndexState.getTimeIndex())
+  const {timeInfoCell: preTimeInfoCell} = await getTimeInfoCell(nextTimeIndexState.getTimeIndex())
   const timeIndexStateCapacity = BigInt(parseInt(curTimeIndexStateCell.output.capacity.substr(2), 16))
   const timeInfoCapacity = preTimeInfoCell ? BigInt(parseInt(preTimeInfoCell.output.capacity.substr(2), 16)) : TIME_INFO_CELL_CAPACITY
 
@@ -89,6 +83,11 @@ const updateTimeCell = async () => {
   const liveCells = await getCells(ownerLockScript, 'lock', {output_data_len_range:['0x0','0x1']})
   const needCapacity = (preTimeInfoCell ? BigInt(0) : TIME_INFO_CELL_CAPACITY) + FEE
   const {inputs, capacity} = collectInputs(liveCells, needCapacity, '0x0')
+
+  //time maybe different between computer,
+  // in order the since can be check, timestamp should sub a modification value
+  const modificationValue = 60 * 2
+  const timestamp = Math.floor(new Date().getTime() / 1000) - modificationValue
 
   inputs.push({
     previousOutput: {
@@ -103,7 +102,7 @@ const updateTimeCell = async () => {
         txHash: preTimeInfoCell.out_point.tx_hash,
         index: preTimeInfoCell.out_point.index,
       },
-      since: generateTimeInfoSince(preTimeInfo.getTimestamp()),
+      since: generateTimeInfoSince(timestamp),
     })
   }
   let outputs = [
@@ -117,7 +116,7 @@ const updateTimeCell = async () => {
       lock: ownerLockScript,
     })
   }
-  const timestamp = Math.floor(new Date().getTime() / 1000)
+
   const nextTimeInfo = new TimeInfo(timestamp, nextTimeIndexState.getTimeIndex())
   const cellDeps = [await secp256k1Dep(), TimeIndexStateDep, TimeInfoDep]
   const rawTx = {

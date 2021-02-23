@@ -8,24 +8,24 @@ const HTTP_SERVER_PORT = process.env.HTTP_SERVER_PORT || 8080
 const TIME_SCRIPT_ARGS = process.env.TIME_SCRIPT_ARGS
 
 let TimeIndexStateTypeScript = {
-  codeHash: '0x95e78b47aeea59f1c7fcd90daec5861333abf51b73fe8560a8979d9e80f4733e',
+  codeHash: '0xa7d6f10511f39842f9f2ff8444b6abeeef99960f2120faf8999f3145719e5794',
   hashType: 'type',
   args: TIME_SCRIPT_ARGS,
 }
 
 const TimeIndexStateDep = {
-  outPoint: {txHash: '0x33c2fa58f193fd7fb12af2f1cc280c0e19f69252b5e0053bc81ea422f3905910', index: '0x0'},
+  outPoint: {txHash: '0x78b9d0d9e9059d5cce0421e7224b48f62cb50f765ef1baa4056bc998698619f6', index: '0x0'},
   depType: 'depGroup',
 }
 
 let TimeInfoTypeScript = {
-  codeHash: '0xdbcc30faf6055246a9a6a709d951378ca50c41c88a7405c1ef3b18a52de765d8',
+  codeHash: '0x7e96be462e2391b428b183f762e64d6299377cd79e71d4d51bb5af2bfe8f400d',
   hashType: 'type',
   args: TIME_SCRIPT_ARGS,
 }
 
 const TimeInfoDep = {
-  outPoint: {txHash: '0x36edff0284824b1a00e636180ec62a9e451f9686904816d2efba2ff8b137187d', index: '0x0'},
+  outPoint: {txHash: '0x64b5e2c5ffa496866bd808537726b6070a5780365763862f62e19255d0308e1d', index: '0x0'},
   depType: 'depGroup',
 }
 
