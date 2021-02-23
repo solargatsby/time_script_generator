@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "The generator of time_index_state_type_script and time_info_type_script",
   "main": "index.js",
-  "repository": "",
-  "author": "",
+  "repository": "https://github.com/solargatsby/time_script_generator",
+  "author": "eric.wang",
   "license": "MIT",
   "scripts": {
     "start": "node src/index.js",
