@@ -6,6 +6,9 @@ const {logger} = require('../utils/log')
 const HTTP_GET_TIMESTAMP_URL = '/get_timestamp'
 
 const startHttpSvr = () => {
+  if (HTTP_SERVER_PORT == 0){
+    return
+  }
   const server = http.createServer()
   server.on('request', async function (request, response) {
     if (request.url === HTTP_GET_TIMESTAMP_URL) {

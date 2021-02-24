@@ -4,7 +4,7 @@ const fs = require('fs')
 const OWNER_PRIVATE_KEY = process.env.OWNER_PRIVATE_KEY || '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
 const CKB_NODE_RPC = process.env.CKB_NODE_RPC || 'http://localhost:8114'
 const CKB_NODE_INDEXER = process.env.CKB_NODE_INDEXER || 'http://localhost:8116'
-const HTTP_SERVER_PORT = process.env.HTTP_SERVER_PORT || 8080
+const HTTP_SERVER_PORT = process.env.HTTP_SERVER_PORT || 0
 const TIME_SCRIPT_ARGS = process.env.TIME_SCRIPT_ARGS
 
 const AlwaysSuccessLockScript =  {
