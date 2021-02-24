@@ -1,5 +1,5 @@
 const CKB = require('@nervosnetwork/ckb-sdk-core').default
-const {CKB_NODE_RPC, TimeIndexStateDep, TimeInfoDep} = require('../utils/config')
+const {CKB_NODE_RPC, AlwaysSuccessDep, TimeIndexStateDep, TimeInfoDep} = require('../utils/config')
 const {secp256k1Dep, getCells, collectInputs, ownerLockInfo} = require('./helper')
 const {
   TIME_INDEX_STATE_CELL_CAPACITY,
@@ -11,7 +11,7 @@ const {logger} = require('../utils/log')
 const {uin32ToHex} = require('../utils/hex')
 
 const ckb = new CKB(CKB_NODE_RPC)
-const FEE = BigInt(1000)
+const FEE = BigInt(10000)
 
 const createTimeCell = async () => {
   const {ownerLockScript, ownerPrivateKey} = await ownerLockInfo()
@@ -34,7 +34,7 @@ const createTimeCell = async () => {
   const timeIndex = 0
   const timestamp = Math.floor(new Date().getTime() / 1000)
 
-  const cellDeps = [await secp256k1Dep(), TimeIndexStateDep, TimeInfoDep]
+  const cellDeps = [await secp256k1Dep(), AlwaysSuccessDep, TimeIndexStateDep, TimeInfoDep]
   const rawTx = {
     version: '0x0',
     cellDeps,

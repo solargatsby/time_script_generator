@@ -1,7 +1,6 @@
 const {createTimeCell} = require('./time_script/create')
 const {updateTimeCell, getCurrentTimeIndexStateCell, getTimeInfoCell} = require('./time_script/update')
 const {TIME_INFO_UPDATE_INTERVAL} = require('./time_script/time_info_script')
-const {TIME_INDEX_CELL_DATA_N} = require('./time_script/time_index_state_script')
 const {startHttpSvr} = require('./http_svr/http_svr')
 const {TimeIndexStateTypeScript, TimeInfoTypeScript, saveConfig} = require('./utils/config')
 const {logger} = require('./utils/log')
@@ -37,10 +36,11 @@ const getNextUpdateTime = (curUpdateTime) => {
 const startUpdateTimeInfoCell = async () => {
     try {
         await updateTimeCell()
+        setTimeout(startUpdateTimeInfoCell, TIME_INFO_UPDATE_INTERVAL*1000)
     } catch (err) {
         logger.warn(err)
+        setTimeout(startUpdateTimeInfoCell, TIME_INFO_UPDATE_INTERVAL/2*1000)
     }
-    setTimeout(startUpdateTimeInfoCell, TIME_INFO_UPDATE_INTERVAL*1000)
 }
 
 startHttpSvr()

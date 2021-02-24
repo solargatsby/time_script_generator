@@ -1,5 +1,4 @@
-const {ownerLockInfo} = require('./helper')
-const {TimeIndexStateTypeScript} = require('../utils/config')
+const {AlwaysSuccessLockScript, TimeIndexStateTypeScript} = require('../utils/config')
 const {remove0x} = require('../utils/hex')
 const TIME_INDEX_STATE_CELL_CAPACITY = BigInt(400) * BigInt(100000000)
 const TIME_INDEX_CELL_DATA_N = 12
@@ -47,10 +46,9 @@ const timeIndexStateTypeScript = args => {
 }
 
 const generateTimeIndexStateOutput = async (args, timeIndexStateCapacity = TIME_INDEX_STATE_CELL_CAPACITY) => {
-  const {ownerLockScript} = await ownerLockInfo()
   return {
     capacity: `0x${timeIndexStateCapacity.toString(16)}`,
-    lock: ownerLockScript,
+    lock: AlwaysSuccessLockScript,
     type: timeIndexStateTypeScript(args),
   }
 }

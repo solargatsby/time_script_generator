@@ -6,7 +6,7 @@ const remove0x = (hex) => {
 }
 
 const ArrayBufferToHex = (arrayBuffer) => {
-  return Array.prototype.map.call(new Uint8Array(arrayBuffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+  return Array.prototype.map.call(new Uint8Array(arrayBuffer), x => ('00' + x.toString(16)).slice(-2)).join('')
 }
 
 const uin32ToHex = (u32, bigEnd = true) => {

@@ -1,7 +1,10 @@
 const CKB = require('@nervosnetwork/ckb-sdk-core').default
+const {scriptToHash, rawTransactionToHash} = require('@nervosnetwork/ckb-sdk-utils')
 const {secp256k1Dep, getCells, collectInputs, ownerLockInfo} = require('./helper')
 const {
   CKB_NODE_RPC,
+  AlwaysSuccessLockScript,
+  AlwaysSuccessDep,
   TimeIndexStateDep,
   TimeIndexStateTypeScript,
   TimeInfoDep,
@@ -21,7 +24,7 @@ const {uin32ToHex} = require('../utils/hex')
 const {logger} = require('../utils/log')
 
 const ckb = new CKB(CKB_NODE_RPC)
-const FEE = BigInt(1000)
+const FEE = BigInt(10000)
 
 const getCurrentTimeIndexStateCell = async () => {
   let curTimeIndexStateCells = await getCells(TimeIndexStateTypeScript, 'type')
@@ -84,11 +87,7 @@ const updateTimeCell = async () => {
   const needCapacity = (preTimeInfoCell ? BigInt(0) : TIME_INFO_CELL_CAPACITY) + FEE
   const {inputs, capacity} = collectInputs(liveCells, needCapacity, '0x0')
 
-  //time maybe different between computer,
-  // in order the since can be check, timestamp should sub a modification value
-  const modificationValue = 60 * 2
-  const timestamp = Math.floor(new Date().getTime() / 1000) - modificationValue
-
+  const timestamp = Math.floor(new Date().getTime()/1000) - 5*60
   inputs.push({
     previousOutput: {
       txHash: curTimeIndexStateCell.out_point.tx_hash,
@@ -118,7 +117,7 @@ const updateTimeCell = async () => {
   }
 
   const nextTimeInfo = new TimeInfo(timestamp, nextTimeIndexState.getTimeIndex())
-  const cellDeps = [await secp256k1Dep(), TimeIndexStateDep, TimeInfoDep]
+  const cellDeps = [await secp256k1Dep(), AlwaysSuccessDep, TimeIndexStateDep, TimeInfoDep]
   const rawTx = {
     version: '0x0',
     cellDeps,
@@ -128,9 +127,23 @@ const updateTimeCell = async () => {
     outputsData: [nextTimeIndexState.toString(), nextTimeInfo.toString(), '0x'],
   }
   rawTx.witnesses = rawTx.inputs.map((_, i) => (i > 0 ? '0x' : {lock: '', inputType: '', outputType: ''}))
-  const signedTx = ckb.signTransaction(ownerPrivateKey)(rawTx)
-  logger.debug(JSON.stringify(signedTx, undefined, 2))
+  const keys = new Map()
+  keys.set(scriptToHash(ownerLockScript), ownerPrivateKey)
+  keys.set(scriptToHash(AlwaysSuccessLockScript), null)
+  const signedWitnesses = ckb.signWitnesses(keys)({
+    transactionHash: rawTransactionToHash(rawTx),
+    witnesses: rawTx.witnesses,
+    inputCells: rawTx.inputs.map((input, index) => {
+      return {
+        outPoint: input.previousOutput,
+        lock: index === 0 ? ownerLockScript : AlwaysSuccessLockScript,
+      }
+    }),
+    skipMissingKeys: true,
+  })
+  const signedTx = { ...rawTx, witnesses: signedWitnesses }
 
+  logger.debug(JSON.stringify(signedTx, undefined, 2))
   const txHash = await ckb.rpc.sendTransaction(signedTx)
   logger.info(`Updating time cell txHash:${txHash} timeIndex:${nextTimeInfo.getTimeIndex()} timestamp:${timestamp}`)
   return {txHash, TimeIndexState: nextTimeIndexState, TimeInfo: nextTimeInfo}

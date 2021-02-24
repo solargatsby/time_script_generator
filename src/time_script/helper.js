@@ -39,6 +39,12 @@ const ownerLockInfo = async () => {
   }
 }
 
+const getCurrentBlockTimestamp = async () => {
+  const curHeader = await ckb.rpc.getTipHeader()
+  const {timestamp} = curHeader
+  return Math.floor(parseInt(timestamp)/1000) //remove millisecond
+}
+
 //getCells from indexer, param script: lock or type, param type: 'lock' or 'type'
 const getCells = async (script, type, filter) => {
   let payload = {
@@ -103,4 +109,5 @@ module.exports = {
   getCells,
   collectInputs,
   ownerLockInfo,
+  getCurrentBlockTimestamp,
 }

@@ -1,5 +1,4 @@
-const {ownerLockInfo} = require('./helper')
-const {TimeInfoTypeScript} = require('../utils/config')
+const {AlwaysSuccessLockScript, TimeInfoTypeScript} = require('../utils/config')
 const {TIME_INDEX_CELL_DATA_N} = require('./time_index_state_script')
 const {uint8ToHex, uin32ToHex,remove0x} = require('../utils/hex')
 
@@ -46,10 +45,9 @@ const timeInfoTypeScript = args => {
 }
 
 const generateTimeInfoOutputs = async (args, timeIndexStateCapacity = TIME_INFO_CELL_CAPACITY) => {
-  const {ownerLockScript} = await ownerLockInfo()
   return {
     capacity: `0x${timeIndexStateCapacity.toString(16)}`,
-    lock: ownerLockScript,
+    lock: AlwaysSuccessLockScript,
     type: timeInfoTypeScript(args),
   }
 }
