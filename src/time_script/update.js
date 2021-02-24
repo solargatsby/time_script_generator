@@ -1,6 +1,6 @@
 const CKB = require('@nervosnetwork/ckb-sdk-core').default
 const {scriptToHash, rawTransactionToHash} = require('@nervosnetwork/ckb-sdk-utils')
-const {secp256k1Dep, getCells, collectInputs, ownerLockInfo} = require('./helper')
+const {secp256k1Dep, getCells, collectInputs, ownerLockInfo, getNextTimeStamp} = require('./helper')
 const {
   CKB_NODE_RPC,
   AlwaysSuccessLockScript,
@@ -86,8 +86,8 @@ const updateTimeCell = async () => {
   const liveCells = await getCells(ownerLockScript, 'lock', {output_data_len_range:['0x0','0x1']})
   const needCapacity = (preTimeInfoCell ? BigInt(0) : TIME_INFO_CELL_CAPACITY) + FEE
   const {inputs, capacity} = collectInputs(liveCells, needCapacity, '0x0')
+  const nextTimestamp = await getNextTimeStamp()
 
-  const timestamp = Math.floor(new Date().getTime()/1000) - 5*60
   inputs.push({
     previousOutput: {
       txHash: curTimeIndexStateCell.out_point.tx_hash,
@@ -101,7 +101,7 @@ const updateTimeCell = async () => {
         txHash: preTimeInfoCell.out_point.tx_hash,
         index: preTimeInfoCell.out_point.index,
       },
-      since: generateTimeInfoSince(timestamp),
+      since: generateTimeInfoSince(nextTimestamp),
     })
   }
   let outputs = [
@@ -116,7 +116,7 @@ const updateTimeCell = async () => {
     })
   }
 
-  const nextTimeInfo = new TimeInfo(timestamp, nextTimeIndexState.getTimeIndex())
+  const nextTimeInfo = new TimeInfo(nextTimestamp, nextTimeIndexState.getTimeIndex())
   const cellDeps = [await secp256k1Dep(), AlwaysSuccessDep, TimeIndexStateDep, TimeInfoDep]
   const rawTx = {
     version: '0x0',
@@ -145,7 +145,7 @@ const updateTimeCell = async () => {
 
   logger.debug(JSON.stringify(signedTx, undefined, 2))
   const txHash = await ckb.rpc.sendTransaction(signedTx)
-  logger.info(`Updating time cell txHash:${txHash} timeIndex:${nextTimeInfo.getTimeIndex()} timestamp:${timestamp}`)
+  logger.info(`Updating time cell txHash:${txHash} timeIndex:${nextTimeInfo.getTimeIndex()} timestamp:${nextTimestamp}`)
   return {txHash, TimeIndexState: nextTimeIndexState, TimeInfo: nextTimeInfo}
 }
 

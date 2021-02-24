@@ -39,10 +39,14 @@ const ownerLockInfo = async () => {
   }
 }
 
-const getCurrentBlockTimestamp = async () => {
+const getNextTimeStamp = async () => {
   const curHeader = await ckb.rpc.getTipHeader()
-  const {timestamp} = curHeader
-  return Math.floor(parseInt(timestamp)/1000) //remove millisecond
+  const {number} = curHeader
+  const curBlockHeight = parseInt(number)
+  const targetBlockHeight = curBlockHeight - 18 //The median block time calculated from the past 37 blocks timestamp
+  const targetHeader = await ckb.rpc.getHeaderByNumber(BigInt(targetBlockHeight))
+  const {timestamp} = targetHeader
+  return Math.floor(parseInt(timestamp)/1000)
 }
 
 //getCells from indexer, param script: lock or type, param type: 'lock' or 'type'
@@ -109,5 +113,5 @@ module.exports = {
   getCells,
   collectInputs,
   ownerLockInfo,
-  getCurrentBlockTimestamp,
+  getNextTimeStamp,
 }
